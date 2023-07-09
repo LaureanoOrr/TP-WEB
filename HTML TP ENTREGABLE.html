@@ -1,0 +1,271 @@
+<html>
+
+<head>
+    <title>TP Entregable</title>
+    <script src='https://code.jquery.com/jquery-1.12.4.js'></script>
+    <script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script> 
+    <script>
+             const url = 'https://ca99-181-231-122-56.ngrok-free.app/student'
+
+            window.onload = function() {
+                $('#ventanaPop').hide() //JQUERY, SERIA COMO UN GET ELEMENT BY ID.
+                obtenerEstudiantes()
+            }
+
+            function cargarEstudiantes() {
+            return new Promise(function(resolve, reject) { // PROMESA, MY FIRST PROMISE. SIEMPRE CON ARGUMENTO RESOLVE Y REJECT.
+                var request = new XMLHttpRequest()
+                request.open('GET', url + '/getAll') //END POINT GET.
+                request.responseType = 'json' // EL TIPO DE ARCHIVO QUE SE ESTARA MANEJANDO.
+                request.onload = function() {
+                    if (request.status == 200) {  // TE DA EL CODIGO DE CONEXION.
+                        resolve(request.response)
+                    } else {
+                        reject(Error(request.statusText))
+                    }
+                }
+                request.onerror = function() {
+                    reject(Error('Error. Sin internet/servicio.')) // SI NO HAY INTERNET, SE UTILIZA EL OBJETO ERROR.
+                }
+                request.send()
+            })
+        }
+
+        function agregarEstudiantes() {
+            return new Promise(function(resolve, reject) {
+                var request = new XMLHttpRequest()
+                request.open('POST', url)
+                request.setRequestHeader('Content-Type', 'application/json')
+                var student = JSON.stringify({
+                    'dni': document.getElementById('dni').value, //NO ANDAN LOS IDS.
+                    'lastName': document.getElementById('lastName').value,
+                    'firstName': document.getElementById('firstName').value,
+                    'email': document.getElementById('email').value,
+                    'cohort': '0',                   //AGREGAR COHORT, STATUS, GENDER, SI NO, NO FUNCIONA Y DA ERROR DE SISTEMA.
+                    'status': 'activo',
+                    'gender': 'masculino',
+                    'address': 'abc123',
+                    'phone': '000'
+                })
+                request.onload = function() {
+                    if (request.status == 201) {
+                        resolve(request.response)
+                    } else {
+                        reject(Error(request.statusText))
+                    }
+                }
+                request.onerror = function() {
+                    reject(Error('Error. Sin internet/servicio.'))
+                }
+                request.send(student)
+            })
+        }
+
+        function borrarEstudiantes(id) {
+            return new Promise(function(resolve, reject) {
+                var request = new XMLHttpRequest()
+                request.open('POST', url + `/${id}/delete`) //END POINT POST.
+                request.setRequestHeader('Content-Type', 'application/json') // PROMESA.
+                request.onload = function() {
+                    if (request.status == 200) {
+                        resolve(request.response)
+                    } else {
+                        reject(Error(request.statusText))
+                    }
+                }
+                request.onerror = function() {
+                    reject(Error('Error. Sin internet/servicio.'))
+                }
+                request.send()
+            })
+        }
+
+        function modificarEstudiantes() {
+            return new Promise(function(resolve, reject) {
+                var request = new XMLHttpRequest()
+                request.open('POST', url + `/${document.getElementsByName('id2')[0].value}/update`) // END POINT: POST, PARA QUE EL USUARIO NO PUEDA VER LOS DATOS.
+                request.setRequestHeader('Content-Type', 'application/json')
+                var student = JSON.stringify({
+                    'dni': document.getElementsByName('dni2')[0].value,  
+                    'lastName': document.getElementsByName('lastName2')[0].value,
+                    'firstName': document.getElementsByName('firstName2')[0].value,
+                    'email': document.getElementsByName('email2')[0].value,
+                    'cohort': '0',
+                    'status': 'activo',
+                    'gender': 'masculino',
+                    'address': 'abc123',
+                    'phone': '000'
+                })
+                request.onload = function() {
+                    if (request.status == 200) {
+                        resolve(request.response)
+                    } else {
+                        reject(Error(request.statusText))
+                    }
+                }
+                request.onerror = function() {
+                    reject(Error('Error. Sin internet/servicio.'))
+                }
+                request.send(student)
+            })
+        }
+
+        function obtenerEstudiantes() {
+            cargarEstudiantes().then(response => { // 
+                var tbody = document.querySelector('tbody')
+                tbody.innerHTML = ''
+                response.forEach(e => {
+                    var row = tbody.insertRow()
+                    var id = row.insertCell()
+                    id.innerHTML = e.id
+                    var dni = row.insertCell()
+                    dni.innerHTML = e.dni
+                    var lastName = row.insertCell()
+                    lastName.innerHTML = e.lastName
+                    var firstName = row.insertCell()
+                    firstName.innerHTML = e.firstName
+                    var email = row.insertCell()
+                    email.innerHTML = e.email
+                    var student = JSON.stringify({ 
+                        'id': e.id, 'dni': e.dni,'lastName': e.lastName, 'firstName': e.firstName, 'email': e.email,
+                    })
+                    var del = row.insertCell()
+                    del.innerHTML = `<button onclick='eliminarEstudiantes(${e.id})'>Borrar</button>`  //BOTON CON EL METODO eliminarEstudiantes para eliminar. (FALTA.)
+                    var view = row.insertCell() 
+                    view.innerHTML = `<button onclick='vistaEstudiantes(${student})'>Ver</button>` //BOTON CON EL METODO vistaEstudiantes para agregar. (FALTA.)
+                })
+                document.getElementById('dni').value = 
+                document.getElementById('lastName').value = 
+                document.getElementById('firstName').value = 
+                document.getElementById('email').value = 
+                document.getElementById('dni').value}).catch(reason => {
+                console.error(reason)
+            })
+        }
+
+        function guardarEstudiantes() {
+            if (document.getElementById('dni').value.trim() !== '' && document.getElementById('lastName').value.trim() !== '' && document.getElementById('firstName').value.trim() !== '' && 
+            document.getElementById('email').value.trim() !== '') {
+                agregarEstudiantes().then(() => {
+                    obtenerEstudiantes()
+                }).catch(reason => {
+                    console.error(reason)
+                })
+            }
+        }
+
+        function vistaEstudiantes(student) {
+            document.getElementsByName('id2')[0].value = student.id
+            document.getElementsByName('dni2')[0].value = student.dni
+            document.getElementsByName('lastName2')[0].value = student.lastName
+            document.getElementsByName('firstName2')[0].value = student.firstName
+            document.getElementsByName('email2')[0].value = student.email
+            $('#ventanaPop').dialog({
+                closeText: ''
+            }).css('font-size', '15px')
+        }
+
+        function eliminarEstudiantes(id) {
+            borrarEstudiantes(id).then(() => {
+                obtenerEstudiantes()
+            }).catch(reason => {
+                console.error(reason)
+            })
+        }
+
+        function actualizarEstudiantes() {
+            if (document.getElementsByName('dni2')[0].value.trim() !== '' &&
+                document.getElementsByName('lastName2')[0].value.trim() !== '' &&
+                document.getElementsByName('firstName2')[0].value.trim() !== '' &&
+                document.getElementsByName('email2')[0].value.trim() !== '') {
+                modificarEstudiantes().then(() => {
+                    $('#ventanaPop').dialog('close')
+                    obtenerEstudiantes()
+                }).catch(reason => {
+                    console.error(reason)
+                })
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <h1 style="font-size: large;">LISTADO DE ESTUDIANTES.</h1>
+    <table style='border: 1px solid'>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>dni</th>
+                <th>Apellido</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th colspan='2'></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td><input id='dni' /></td> 
+                <td><input id='lastName' /></td>
+                <td><input id='firstName' /></td>
+                <td><input id='email' /></td>
+                <td colspan='2'><button onclick='guardarEstudiantes()'>Agregar Estudiante</button></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div id='ventanaPop'>
+        <table>
+            <tr>
+                <td><label for='id2'>ID</label></td>
+                <td><input name='id2'/></td>
+            </tr>
+            <tr>
+                <td><label for='dni2'>dni</label></td>
+                <td><input name='dni2'/></td>
+            </tr>
+            <tr>
+                <td><label for='lastName2'>Last Name</label></td>
+                <td><input name='lastName2'/></td>
+            </tr>
+            <tr>
+                <td><label for='firstName2'>First Name</label></td>
+                <td><input name='firstName2'/></td>
+            </tr>
+            <tr>
+                <td><label for='email2'>Email</label></td>
+                <td><input name='email2'/></td>
+            </tr>
+            <tr>
+                <td colspan='2'><button onclick='actualizarEstudiantes()'>Actualizar</button></td>
+            </tr>
+        </table>
+    </div>
+
+    <style>
+table {
+   width: 100%;
+   text-align: left;
+   border-collapse: collapse;
+   margin: 0 0 1em 0;
+   caption-side: top;
+}
+caption, td, th {
+   padding: 0.3em;
+}
+th, td {
+   border-bottom: 1px solid #000;
+   border-right: 1px solid #000;
+}
+th:lastchild, td:lastchild {
+    border-right: 0;
+}
+th {
+   width: 25%;
+}
+     </style>
+
+</body>
+</html>
