@@ -13,7 +13,7 @@
             }
 
             function cargarEstudiantes() {
-            return new Promise(function(resolve, reject) { // PROMESA, MY FIRST PROMISE. SIEMPRE CON ARGUMENTO RESOLVE Y REJECT.
+            return new Promise(function(resolve, reject) { // PROMESA. SIEMPRE CON ARGUMENTO RESOLVE Y REJECT.
                 var request = new XMLHttpRequest()
                 request.open('GET', url + '/getAll') //END POINT GET.
                 request.responseType = 'json' // EL TIPO DE ARCHIVO QUE SE ESTARA MANEJANDO.
@@ -162,7 +162,7 @@
             document.getElementsByName('email2')[0].value = student.email
             $('#ventanaPop').dialog({
                 closeText: ''
-            }).css('font-size', '15px')
+            })
         }
 
         function eliminarEstudiantes(id) {
@@ -204,17 +204,23 @@
         </thead>
         <tbody>
         </tbody>
-        <tfoot>
-            <tr>
-                <td></td>
-                <td><input id='dni' /></td> 
-                <td><input id='lastName' /></td>
-                <td><input id='firstName' /></td>
-                <td><input id='email' /></td>
-                <td colspan='2'><button onclick='guardarEstudiantes()'>Agregar Estudiante</button></td>
-            </tr>
-        </tfoot>
     </table>
+
+
+    <h1 style="font-size: medium;">Agregar Estudiante:</h1>
+
+    <table style="border: 2px #7c0e0e groove">
+        <tbody>
+            <tr>
+                <td style="border: 2px #7c0e0e groove">DNI: <input id='dni'/></td>
+                <td style="border: 2px #7c0e0e groove">Apellido: <input id='lastName'/></td>
+                <td style="border: 2px #7c0e0e groove">Nombre: <input id='firstName'/></td>
+                <td style="border: 2px #7c0e0e groove">Email: <input id='email'/></td></td>
+                <td style="border: 2px #7c0e0e groove" colspan='2'><button onclick='guardarEstudiantes()'>Agregar Estudiante</button></td>
+            </tr>
+        </tbody>
+    </table>
+
 
     <div id='ventanaPop'>
         <table>
@@ -239,33 +245,35 @@
                 <td><input name='email2'/></td>
             </tr>
             <tr>
-                <td colspan='2'><button onclick='actualizarEstudiantes()'>Actualizar</button></td>
+                <td colspan='2'><button onclick='actualizarEstudiantes()'>Actualizar Estudiante</button></td>
             </tr>
         </table>
     </div>
+   
 
-    <style>
-table {
-   width: 100%;
-   text-align: left;
-   border-collapse: collapse;
-   margin: 0 0 1em 0;
-   caption-side: top;
-}
-caption, td, th {
-   padding: 0.3em;
-}
-th, td {
-   border-bottom: 1px solid #000;
-   border-right: 1px solid #000;
-}
-th:lastchild, td:lastchild {
-    border-right: 0;
-}
-th {
-   width: 25%;
-}
-     </style>
+ 
 
 </body>
 </html>
+<style>
+    table {
+       width: 100%;
+       text-align: left;
+       border-collapse: collapse;
+       margin: 0 0 1em 0;
+       caption-side: top;
+    }
+    caption, td, th {
+       padding: 0.3em;
+    }
+    th, td {
+       border-bottom: 1px solid #000;
+       border-right: 1px solid #000;
+    }
+    th:lastchild, td:lastchild {
+        border-right: 0;
+    }
+    th {
+       width: 25%;
+    }
+</style>
